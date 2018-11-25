@@ -33,5 +33,6 @@ func (n *Node) Init() {
 }
 
 func (n *Node) Start() {
-
+	ch := make(chan bool)
+	<-ch
 }

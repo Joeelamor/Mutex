@@ -8,7 +8,7 @@ import (
 func main() {
 
 	Hostname, _ := os.Hostname()
-	NodeNum, InterReqDelay, CsExecTime, ReqNum, HostList := parse("config.txt")
+	NodeNum, InterReqDelay, CsExecTime, ReqNum, HostList := parse("config1.txt")
 	curNode := node.Node{
 		Hostname:      Hostname,
 		NodeNum:       NodeNum,
@@ -19,4 +19,5 @@ func main() {
 	}
 	curNode.Init()
 	curNode.Start()
+	//fmt.Println(Hostname)
 }
