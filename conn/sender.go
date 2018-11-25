@@ -2,7 +2,8 @@ package conn
 
 import (
 	"Mutex/proto"
-	"github.com/golang/protobuf/proto"
+	"github.com/golang/glog"
+	"github.com/matttproud/golang_protobuf_extensions/pbutil"
 	"net"
 )
 
@@ -28,15 +29,15 @@ func (s *sender) Start() {
 	for {
 		select {
 		case msg := <-s.outbox:
-			b, err := proto.Marshal(msg)
+			glog.Info("new message to send")
+			glog.Info(msg)
+			n, err := pbutil.WriteDelimited(s.socket, msg)
 			if err != nil {
-				// handle error
+				glog.Error(err.Error())
 				continue
 			}
-			_, err = s.socket.Write(b)
-			if err != nil {
-				continue
-			}
+			glog.Info("new message sent")
+			glog.Info(n)
 		case <-s.stop:
 			return
 		}

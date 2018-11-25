@@ -2,9 +2,8 @@ package conn
 
 import (
 	"Mutex/proto"
-	"fmt"
-	"github.com/golang/protobuf/proto"
-	"log"
+	"github.com/golang/glog"
+	"github.com/matttproud/golang_protobuf_extensions/pbutil"
 	"net"
 	"sync"
 )
@@ -19,17 +18,23 @@ type Conn struct {
 func (conn *Conn) Dial(id int32, host string, port string) error {
 	c, err := net.Dial("tcp", host+":"+port)
 	if err != nil {
-		log.Fatal(err)
+		glog.Fatal(err)
+		return err
 	}
 	s := NewSender(c)
 	go s.Start()
 	conn.m.Store(id, s)
 	ini := &mutex_info.MutexInfo{
 		Type:          mutex_info.MutexInfo_INI,
-		SenderId:      conn.id,
-		DestinationId: id,
+		SenderId:      1,
+		DestinationId: 2,
+		SourceId:      111,
+		Timestamp:     123456,
 	}
-	s.Send(ini)
+	glog.Infoln(ini.String())
+	for {
+		s.Send(ini)
+	}
 	//fmt.Fprintf(c, "Receive a Dial\n")
 	//status, err := bufio.NewReader(c).ReadString('\n')
 	//if err != nil {
@@ -42,22 +47,25 @@ func (conn *Conn) Dial(id int32, host string, port string) error {
 func (conn *Conn) Listen() {
 	ln, err := net.Listen("tcp", ":"+conn.Port)
 	if err != nil {
-		log.Fatal(err)
+		glog.Fatal(err)
 	}
 	for {
 		c, err := ln.Accept()
 		if err != nil {
-			log.Fatal(err)
+			glog.Fatal(err)
 		}
+		glog.Info("new connection")
 		go func() {
-			pb := &mutex_info.MutexInfo{}
-			b := make([]byte, 2048)
-			n, _ := c.Read(b)
-			err := proto.Unmarshal(b[:n], pb)
-			if err != nil {
-				log.Fatal(err)
+			for {
+				pb := &mutex_info.MutexInfo{}
+				n, err := pbutil.ReadDelimited(c, pb)
+				if err != nil {
+					glog.Infoln(err.Error())
+					continue
+				}
+				glog.Info(n)
+				glog.Info(pb)
 			}
-			fmt.Print(pb)
 		}()
 	}
 }
