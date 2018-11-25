@@ -13,7 +13,7 @@ type Node struct {
 	ReqNum        int
 	HostList      []util.HostInfo
 
-	nodeId int
+	nodeId int32
 	port   string
 }
 
@@ -27,7 +27,7 @@ func (n *Node) Init() {
 	Conn := conn.NewConn(n.port)
 	for _, host := range n.HostList {
 		if host.Id < n.nodeId {
-			Conn.Dial(host.HostName, host.Port)
+			Conn.Dial(host.Id, host.HostName, host.Port)
 		}
 	}
 }

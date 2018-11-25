@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+message MutexInfo {
+    enum MsgType {
+        INI = 0;
+        REQUEST = 1;
+        REPLY = 2;
+        FINISH = 3;
+    }
+    MsgType type = 1;
+    int32 sender_id = 2;
+    int32 source_id = 3;
+    int32 destination_id = 4;
+    int64 timestamp = 5;
+}

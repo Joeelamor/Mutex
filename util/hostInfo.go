@@ -1,7 +1,7 @@
 package util
 
 type HostInfo struct {
-	Id       int
+	Id       int32
 	HostName string
 	Port     string
 }

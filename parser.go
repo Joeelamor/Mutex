@@ -37,12 +37,12 @@ func parse(filename string) (int, int, int, int, []util.HostInfo) {
 		if len(words) == 0 {
 			continue
 		}
-		id, _ := strconv.Atoi(words[0])
+		id, _ := strconv.ParseInt(words[0], 10, 32)
 		hostname := words[1]
 		port := words[2]
 
 		hostInfo := util.HostInfo{
-			Id:       id,
+			Id:       int32(id),
 			HostName: hostname,
 			Port:     port,
 		}
